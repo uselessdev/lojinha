@@ -1,8 +1,8 @@
 import * as React from "react";
-import { MoveRightIcon, MoveUpRightIcon } from "lucide-react";
+import { MoveUpRightIcon } from "lucide-react";
 import { Logo } from "~/components/logo";
-import { Button } from "~/components/ui/button";
 import { ToggleColorScheme } from "~/components/theme/toggle";
+import { SignIn } from "~/components/signin";
 
 export default function WebsiteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -24,9 +24,7 @@ export default function WebsiteLayout({ children }: { children: React.ReactNode 
         </div>
 
         <nav className="flex items-center gap-4">
-          <Button className="flex w-[122px] items-center gap-2" size="sm" variant="outline">
-            Entrar <MoveRightIcon />
-          </Button>
+          <SignIn />
         </nav>
       </header>
 

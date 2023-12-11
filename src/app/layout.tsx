@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { ThemeProvider } from '~/components/theme/provider';
 import "~/app/globals.css";
 
 export default function RootLayout({
@@ -8,7 +9,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

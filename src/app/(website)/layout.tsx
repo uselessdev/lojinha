@@ -2,6 +2,7 @@ import * as React from 'react'
 import { MoveRightIcon, MoveUpRightIcon,  } from 'lucide-react'
 import { Logo } from '~/components/logo'
 import { Button } from '~/components/ui/button'
+import { ToggleColorScheme } from '~/components/theme/toggle'
 
 export default function WebsiteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -32,7 +33,10 @@ export default function WebsiteLayout({ children }: { children: React.ReactNode 
       <main className="container mx-auto">{children}</main>
 
       <footer className="container mx-auto flex h-20 items-center justify-between">
-        <span className="text-xs text-foreground/70">&copy; {new Date().getFullYear()} lojinha.dev</span>
+        <div className="flex items-center gap-2">
+          <ToggleColorScheme />
+          <span className="text-xs text-foreground/70">&copy; {new Date().getFullYear()} lojinha.dev</span>
+        </div>
       </footer>
     </>
   )

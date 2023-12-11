@@ -1,6 +1,6 @@
 import * as React from "react";
 import { MoveUpRightIcon } from "lucide-react";
-import { Logo } from "~/components/logo";
+import { Logo } from "~/components/layout/logo";
 import { ToggleColorScheme } from "~/components/theme/toggle";
 import { SignIn } from "~/components/signin";
 

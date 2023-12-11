@@ -6,13 +6,10 @@ export default function Home() {
           Desenvolva seu e-commerce de forma rápida.
         </h2>
 
-        <p className="text-muted-foreground/70 text-xl">
+        <p className="text-xl text-muted-foreground/70">
           Lojinha é uma plataforma de e-commerce{" "}
-          <strong className="text-muted-foreground font-medium underline decoration-wavy">
-            headless
-          </strong>
-          , nós fornecemos a plataforma e você se preocupa com a experiência do
-          seu cliente.
+          <strong className="font-medium text-muted-foreground underline decoration-wavy">headless</strong>, nós
+          fornecemos a plataforma e você se preocupa com a experiência do seu cliente.
         </p>
       </div>
     </section>

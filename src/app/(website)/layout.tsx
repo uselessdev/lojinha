@@ -1,8 +1,8 @@
-import * as React from 'react'
-import { MoveRightIcon, MoveUpRightIcon,  } from 'lucide-react'
-import { Logo } from '~/components/logo'
-import { Button } from '~/components/ui/button'
-import { ToggleColorScheme } from '~/components/theme/toggle'
+import * as React from "react";
+import { MoveRightIcon, MoveUpRightIcon } from "lucide-react";
+import { Logo } from "~/components/logo";
+import { Button } from "~/components/ui/button";
+import { ToggleColorScheme } from "~/components/theme/toggle";
 
 export default function WebsiteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -39,5 +39,5 @@ export default function WebsiteLayout({ children }: { children: React.ReactNode 
         </div>
       </footer>
     </>
-  )
+  );
 }

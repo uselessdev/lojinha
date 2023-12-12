@@ -1,5 +1,5 @@
 import { auth } from "@clerk/nextjs";
-import { db } from "~/lib/db";
+import { InsertEvent, db, events } from "~/lib/db";
 
 export const Events = {
   all: async () => {
@@ -9,5 +9,9 @@ export const Events = {
       where: (event, { or, eq }) => or(eq(event.actor, String(userId)), eq(event.store, String(orgId))),
       orderBy: (event, { desc }) => desc(event.createdAt),
     });
+  },
+
+  create: async ({ actor, store, ...event }: InsertEvent) => {
+    return await db.insert(events).values({ ...event, actor, store });
   },
 };

@@ -32,3 +32,4 @@ export const events = pgTable(
 );
 
 export type Event = typeof events.$inferSelect;
+export type InsertEvent = typeof events.$inferInsert;

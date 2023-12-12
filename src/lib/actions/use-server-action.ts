@@ -1,5 +1,3 @@
-"use client";
-
 import { useCallback, useState } from "react";
 import { type Result } from "./create-server-action";
 
@@ -52,5 +50,3 @@ export function useServerAction<A, T>(action: Action<A, T>) {
     isError: Boolean(error),
   };
 }
-
-export * from "./create-server-action";

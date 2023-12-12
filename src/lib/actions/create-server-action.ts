@@ -1,3 +1,5 @@
+import "server-only";
+
 import { auth } from "@clerk/nextjs";
 import { z } from "zod";
 import { Webhooks } from "~/repositories/webhooks";
@@ -6,7 +8,7 @@ export type Result<T> = { success: true; data?: T } | { success: false; error: s
 
 export function createServerAction<I, Output = void>(options: {
   schema: z.Schema<I>;
-  handler: (args: I, ctx: { user: string; store: string; wh?: string | null }) => Promise<Output>;
+  handler: (args: I, ctx: { user: string; store: string; wh?: string | null }) => Promise<Result<Output>>;
 }) {
   const { userId, orgId } = auth();
 
@@ -14,7 +16,7 @@ export function createServerAction<I, Output = void>(options: {
     const payload = options.schema.safeParse(data);
 
     if (!payload.success) {
-      return payload;
+      return { success: false, error: payload.error.issues.map((issue) => `${issue.path}: ${issue.message}`) };
     }
 
     const wh = await Webhooks.find(String(orgId));

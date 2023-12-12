@@ -1,4 +1,4 @@
-import { HomeIcon, NewspaperIcon, WebhookIcon } from "lucide-react";
+import { HomeIcon, NewspaperIcon, SettingsIcon, WebhookIcon } from "lucide-react";
 
 export const menu = [
   {
@@ -13,6 +13,13 @@ export const menu = [
     name: "Webhooks",
     url: `/webhooks`,
     icon: <WebhookIcon />,
+    disabled: false,
+    group: "Configurações",
+  },
+  {
+    name: "Loja",
+    url: `/settings`,
+    icon: <SettingsIcon />,
     disabled: false,
     group: "Configurações",
   },

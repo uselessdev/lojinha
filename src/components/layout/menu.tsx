@@ -1,4 +1,4 @@
-import { HomeIcon } from "lucide-react";
+import { HomeIcon, NewspaperIcon } from "lucide-react";
 
 export const menu = [
   {
@@ -7,6 +7,14 @@ export const menu = [
     icon: <HomeIcon />,
     disabled: false,
     group: "",
+  },
+
+  {
+    name: "Eventos",
+    url: `/events`,
+    icon: <NewspaperIcon />,
+    disabled: false,
+    group: "Configurações",
   },
 ];
 

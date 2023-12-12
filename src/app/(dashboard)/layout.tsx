@@ -7,7 +7,7 @@ import { ToggleColorScheme } from "~/components/theme/toggle";
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid min-h-[100dvh] w-full grid-cols-[280px_1fr]">
-      <aside className="flex flex-col p-4">
+      <aside className="flex flex-col px-4 pb-4">
         <header className="flex h-16 items-center px-2">
           <Logo className="h-6 w-6" />
         </header>
@@ -19,7 +19,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </aside>
 
-      <div className="py-4 pr-4">
+      <div className="pb-4 pr-4">
         <header className="flex h-16 items-center justify-end gap-3">
           <Header />
         </header>

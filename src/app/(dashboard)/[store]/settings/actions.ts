@@ -7,13 +7,13 @@ import { createServerAction } from "~/lib/actions/create-server-action";
 
 export const updateStoreAction = createServerAction({
   schema: settingsSchema,
-  handler: async (previous, payload, ctx) => {
+  handler: async (payload, ctx) => {
     try {
       await Stores.update(payload, ctx);
 
       revalidatePath(`/${ctx.store}/settings`, "page");
 
-      return { success: true };
+      return { success: true, data: { id: "name" } };
     } catch (error) {
       return { success: false, error: `Alguma coisa deu errado ao tentar alterar suas configurações.` };
     }

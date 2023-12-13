@@ -1,4 +1,4 @@
-import { HomeIcon, NewspaperIcon, SettingsIcon, WebhookIcon } from "lucide-react";
+import { HomeIcon, KeyRoundIcon, NewspaperIcon, SettingsIcon, WebhookIcon } from "lucide-react";
 
 export const menu = [
   {
@@ -8,7 +8,13 @@ export const menu = [
     disabled: false,
     group: "",
   },
-
+  {
+    name: "Chaves de API",
+    url: `/keys`,
+    icon: <KeyRoundIcon />,
+    disabled: false,
+    group: "Configurações",
+  },
   {
     name: "Webhooks",
     url: `/webhooks`,

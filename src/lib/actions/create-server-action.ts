@@ -8,15 +8,11 @@ export type Result<T> = { success: true; data?: T } | { success: false; error: s
 
 export function createServerAction<I, Output = void>(options: {
   schema: z.Schema<I>;
-  handler: (
-    previous: unknown,
-    args: I,
-    ctx: { user: string; store: string; wh?: string | null },
-  ) => Promise<Result<Output>>;
+  handler: (args: I, ctx: { user: string; store: string; wh?: string | null }) => Promise<Result<Output>>;
 }) {
   const { userId, orgId } = auth();
 
-  return async (previous: unknown, data: I) => {
+  return async (data: I) => {
     const payload = options.schema.safeParse(data);
 
     if (!payload.success) {
@@ -25,6 +21,6 @@ export function createServerAction<I, Output = void>(options: {
 
     const wh = await Webhooks.find(String(orgId));
 
-    return options.handler(previous, payload.data, { store: String(orgId), user: String(userId), wh });
+    return options.handler(payload.data, { store: String(orgId), user: String(userId), wh });
   };
 }

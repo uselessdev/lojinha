@@ -10,9 +10,9 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "~/components/ui/input";
 import { Autocomplete, Option } from "~/components/autocomplete";
 import { updateStoreAction } from "../actions";
-import { useFormState } from "react-dom";
 import { SubmitButton } from "~/components/submit-button";
-import { Toast } from "~/components/toast";
+import { useServerAction } from "~/lib/actions/use-server-action";
+import { useToast } from "~/components/ui/use-toast";
 
 type Props = {
   store?: Omit<Store, "emails"> & { emails: Email[] };
@@ -20,9 +20,9 @@ type Props = {
 
 export function SettingsForm({ store }: Props) {
   const { user } = useUser();
+  const { toast } = useToast();
   const { organization, memberships } = useOrganization({ memberships: true });
-
-  const [state, mutate] = useFormState(updateStoreAction, undefined);
+  const { mutate } = useServerAction(updateStoreAction);
 
   const members: Option[] = memberships?.isLoading
     ? []
@@ -56,10 +56,31 @@ export function SettingsForm({ store }: Props) {
     },
   });
 
+  const onSubmit = () => {
+    mutate(form.getValues(), {
+      onSuccess: () => {
+        toast({
+          title: "Pronto",
+          description: "As alterações foram salvas.",
+          className: "p-3",
+        });
+      },
+      onError: () => {
+        toast({
+          title: "Ops",
+          description:
+            "Ocorreu um problema ao tentar salvar suas alterações, tente novamente ou entre em contato com o suporte.",
+          className: "p-3",
+          variant: "destructive",
+        });
+      },
+    });
+  };
+
   return (
     <>
       <Form {...form}>
-        <form className="space-y-4" action={() => mutate(form.getValues())}>
+        <form className="space-y-4" action={onSubmit}>
           <FormField
             control={form.control}
             name="name"
@@ -140,15 +161,6 @@ export function SettingsForm({ store }: Props) {
           <SubmitButton>Alterar</SubmitButton>
         </form>
       </Form>
-
-      <Toast open={state?.success} title="Alterada" description="As alterações foram salvas." />
-
-      <Toast
-        open={state && !state?.success}
-        title="Falhou"
-        description="Ocorreu um problema ao tentar salvar suas alterações, tente novamente ou entre em contato com o suporte."
-        variant="destructive"
-      />
     </>
   );
 }

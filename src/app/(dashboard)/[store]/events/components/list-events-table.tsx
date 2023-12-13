@@ -33,9 +33,9 @@ export function ListEvents(props: Props) {
     <Table>
       <TableHeader>
         {table.getHeaderGroups().map((group) => (
-          <TableRow key={group.id} className="border-0 hover:bg-transparent">
+          <TableRow key={group.id}>
             {group.headers.map((header) => (
-              <TableHead key={header.id} className="text-xs uppercase">
+              <TableHead key={header.id}>
                 {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
               </TableHead>
             ))}

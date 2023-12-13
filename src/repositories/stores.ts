@@ -21,6 +21,10 @@ export const Stores = {
         .onConflictDoUpdate({ set: { ...payload, updatedAt: new Date() }, target: stores.store })
         .returning();
 
+      if (emails.length <= 0) {
+        await tx.delete(e).where(eq(e.store, ctx.store));
+      }
+
       if (store && emails?.length > 0) {
         await tx.delete(e).where(and(notInArray(e.address, emails), eq(e.store, ctx.store)));
 

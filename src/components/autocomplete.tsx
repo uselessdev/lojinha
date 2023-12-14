@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useCombobox, useMultipleSelection } from "downshift";
 import { XIcon } from "lucide-react";
+import { cn } from "~/lib/utils";
 
 export type Option = {
   value: string | number;
@@ -34,9 +35,8 @@ export function Autocomplete({
       (option) =>
         !selected.find(({ value }) => {
           return value === option.value;
-        }) &&
-        // || option.value.includes(search)
-        option.label.includes(search),
+        }) && option.label.toLocaleLowerCase().includes(search),
+      // option.value.toString().includes(search),
     );
   }, [selected, options, value]);
 
@@ -145,9 +145,10 @@ export function Autocomplete({
       </div>
 
       <ul
-        className={`absolute z-10 w-full min-w-[200px] max-w-max translate-y-4 rounded-md border bg-background p-1 opacity-0 transition-all ${
-          isOpen ? "translate-y-2 opacity-100" : ""
-        }`}
+        className={cn(
+          `invisible absolute z-10 w-full min-w-[200px] max-w-max translate-y-4 rounded-md border bg-background p-1 opacity-0 transition-all`,
+          { "visible translate-y-2 opacity-100": isOpen },
+        )}
         {...getMenuProps({
           style: {
             display: items.length <= 0 && (value.length <= 0 || !createWhenNotExists) ? "none" : "initial",

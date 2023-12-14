@@ -7,6 +7,9 @@ export const actions = pgEnum("event_action", [
   "UPDATE_STORE",
   "CREATE_COLLECTION",
   "UPDATE_COLLECTION",
+  "ARCHIVE_COLLECTION",
+  "RESTORE_COLLECTION",
+  "DELETE_COLLECTION",
   "CREATE_KEY",
   "REVOKE_KEY",
 ]);

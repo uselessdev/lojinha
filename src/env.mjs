@@ -12,6 +12,8 @@ export const env = createEnv({
     UNKEY_APP_ID: z.string().min(1),
     UNKEY_APP_URL: z.string().url(),
     UNKEY_APP_KEY: z.string().min(1),
+    UPLOADTHING_SECRET: z.string().min(1),
+    UPLOADTHING_APP_ID: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
@@ -26,6 +28,8 @@ export const env = createEnv({
     UNKEY_APP_ID: process.env.UNKEY_APP_ID,
     UNKEY_APP_URL: process.env.UNKEY_APP_URL,
     UNKEY_APP_KEY: process.env.UNKEY_APP_KEY,
+    UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
+    UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
 
     // public variables ------------------------------------------------------------
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,

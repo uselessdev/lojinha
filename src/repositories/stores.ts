@@ -36,8 +36,6 @@ export const Stores = {
 
       await Events.create({
         action: "UPDATE_STORE",
-        actor: ctx.user,
-        store: ctx.store,
         payload: { ...payload, emails },
       });
     });

@@ -24,7 +24,7 @@ export const createApiKeyAction = createServerAction({
         ownerId: ctx.store,
       });
 
-      await Events.create({ action: "CREATE_KEY", actor: ctx.user, store: ctx.store, payload: { store: ctx.store } });
+      await Events.create({ action: "CREATE_KEY", payload: { store: ctx.store } });
 
       revalidatePath(`${ctx.store}/keys`, "page");
 
@@ -43,7 +43,7 @@ export const revokeApiKeyAction = createServerAction({
   handler: async (payload, ctx) => {
     try {
       await unkey.keys.delete({ keyId: payload.key });
-      await Events.create({ action: "REVOKE_KEY", actor: ctx.user, store: ctx.store, payload: { store: ctx.store } });
+      await Events.create({ action: "REVOKE_KEY", payload: { store: ctx.store } });
 
       revalidatePath(`${ctx.store}/keys`, "page");
 

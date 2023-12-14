@@ -1,4 +1,4 @@
-import { HomeIcon, KeyRoundIcon, NewspaperIcon, SettingsIcon, WebhookIcon } from "lucide-react";
+import { HomeIcon, KeyRoundIcon, LayersIcon, NewspaperIcon, SettingsIcon, WebhookIcon } from "lucide-react";
 
 export const menu = [
   {
@@ -7,6 +7,13 @@ export const menu = [
     icon: <HomeIcon />,
     disabled: false,
     group: "",
+  },
+  {
+    name: "Coleções",
+    url: `/collections`,
+    icon: <LayersIcon />,
+    disabled: false,
+    group: "Loja",
   },
   {
     name: "Chaves de API",

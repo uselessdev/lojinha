@@ -1,0 +1,294 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "lojinha.dev",
+    "description": "lojinha.dev api para aplicações.",
+    "version": "0.1.0",
+    "license": {
+      "name": "Apache-2.0"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.lojinha.dev/v1",
+      "description": "Produção"
+    }
+  ],
+  "webhooks": {
+    "collection.create": {
+      "post": {
+        "description": "Quando uma nova coleção é criada.",
+        "requestBody": {
+          "description": "Quando uma nova coleção é criada",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CollectionData"
+              },
+              "example": {
+                "data": {
+                  "id": "col_h35xsnhkyz6mephf0nu3ng0w",
+                  "name": "Puma",
+                  "slug": "puma",
+                  "description": null,
+                  "createdAt": "2023-12-04 22:06:31.369478",
+                  "updatedAt": null,
+                  "deletedAt": null
+                },
+                "type": "collection.create"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Se a solicitação for feita com sucesso, deve retornar um status 200."
+          }
+        }
+      }
+    },
+    "collection.update": {
+      "post": {
+        "description": "Quando uma coleção é atualizada.",
+        "requestBody": {
+          "description": "Quando uma coleção é atualizada",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Collection"
+              },
+              "example": {
+                "data": {
+                  "id": "col_h35xsnhkyz6mephf0nu3ng0w",
+                  "name": "Puma x IVE",
+                  "slug": "puma-x-ive",
+                  "description": null,
+                  "createdAt": "2023-12-04 22:06:31.369478",
+                  "updatedAt": "2023-12-07 16:06:31.369478",
+                  "deletedAt": null
+                },
+                "type": "collection.update"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Se a solicitação for feita com sucesso, deve retornar um status 200."
+          }
+        }
+      }
+    },
+    "collection.archive": {
+      "post": {
+        "description": "Quando uma coleção é arquivada.",
+        "requestBody": {
+          "description": "Quando uma coleção é arquivada",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "cuid"
+                      }
+                    }
+                  },
+                  "type": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "data": {
+                  "id": "col_h35xsnhkyz6mephf0nu3ng0w"
+                },
+                "type": "collection.archive"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Se a solicitação for feita com sucesso, deve retornar um status 200."
+          }
+        }
+      }
+    },
+    "collection.restore": {
+      "post": {
+        "description": "Quando uma coleção é restaurada.",
+        "requestBody": {
+          "description": "Quando uma coleção é restaurada",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "cuid"
+                      }
+                    }
+                  },
+                  "type": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "data": {
+                  "id": "col_h35xsnhkyz6mephf0nu3ng0w"
+                },
+                "type": "collection.restore"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Se a solicitação for feita com sucesso, deve retornar um status 200."
+          }
+        }
+      }
+    },
+    "collection.delete": {
+      "post": {
+        "description": "Quando uma coleção é excluída definitivamente.",
+        "requestBody": {
+          "description": "Quando uma coleção é definitivamente",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "cuid"
+                      }
+                    }
+                  },
+                  "type": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "data": {
+                  "id": "col_h35xsnhkyz6mephf0nu3ng0w"
+                },
+                "type": "collection.delete"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Se a solicitação for feita com sucesso, deve retornar um status 200."
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/collections": {
+      "get": {
+        "summary": "Lista todas as coleções da loja.",
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "collections": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Collection",
+                        "parents": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Collection"
+                          }
+                        }
+                      }
+                    },
+                    "total": {
+                      "type": "number",
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "CollectionData": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Collection"
+          },
+          "type": {
+            "type": "string"
+          }
+        }
+      },
+      "Collection": {
+        "type": "object",
+        "required": ["id", "name", "slug", "createdAt"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "cuid"
+          },
+          "name": {
+            "type": "string",
+            "example": "Puma"
+          },
+          "slug": {
+            "type": "string",
+            "example": "puma"
+          },
+          "description": {
+            "type": "string",
+            "example": "Puma"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deletedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}

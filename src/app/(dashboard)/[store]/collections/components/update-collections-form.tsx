@@ -5,7 +5,6 @@ import slugify from "slugify";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { Button } from "~/components/ui/button";
 import { Autocomplete, Option } from "~/components/autocomplete";
 import { Editor } from "~/components/editor";
 import { InputUpload } from "~/components/input-upload";

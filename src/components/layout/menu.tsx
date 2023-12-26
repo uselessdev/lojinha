@@ -1,4 +1,4 @@
-import { HomeIcon, KeyRoundIcon, LayersIcon, NewspaperIcon, SettingsIcon, WebhookIcon } from "lucide-react";
+import { HomeIcon, KeyRoundIcon, LayersIcon, NewspaperIcon, SettingsIcon, TagIcon, WebhookIcon } from "lucide-react";
 
 export const menu = [
   {
@@ -12,6 +12,13 @@ export const menu = [
     name: "Coleções",
     url: `/collections`,
     icon: <LayersIcon />,
+    disabled: false,
+    group: "Loja",
+  },
+  {
+    name: "Produtos",
+    url: `/products`,
+    icon: <TagIcon className="text-current" />,
     disabled: false,
     group: "Loja",
   },

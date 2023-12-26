@@ -16,11 +16,12 @@ export function getEventAction(event: Event["action"]) {
     RESTORE_COLLECTION: `restaurou uma coleção 🔖`,
     DELETE_COLLECTION: `removeu uma coleção 🪓`,
 
-    // CREATE_PRODUCT: `criou um produto 🏷`,
-    // UPDATE_PRODUCT: `atualizou um produto 🔨`,
-    // ARCHIVE_PRODUCT: `arquivou um produto 🗄`,
-    // UNARCHIVE_PRODUCT: `restaurou um produto 🗃`,
-    // DELETE_PRODUCT: `removeu um produto 🗑️`,
+    CREATE_PRODUCT: `criou um produto 🏷`,
+    UPDATE_PRODUCT: `atualizou um produto 🔨`,
+    ARCHIVE_PRODUCT: `arquivou um produto 🗄`,
+    RESTORE_PRODUCT: `restaurou um produto 🗃`,
+    DELETE_PRODUCT: `removeu um produto 🗑️`,
+
     CREATE_KEY: `criou uma chave 🔑`,
     REVOKE_KEY: `revogou uma chave 🔐`,
     // CREATE_ORDER: `carrinho criado 🛒`,

@@ -2,6 +2,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import { integer, index, timestamp, primaryKey, text, serial, pgTable } from "drizzle-orm/pg-core";
 import { images } from ".";
+import { products } from "./products";
 
 export const collections = pgTable(
   "collections",
@@ -28,6 +29,7 @@ export const collectionsRelations = relations(collections, ({ many }) => ({
   parents: many(collectionsToCollections, { relationName: "child" }),
   children: many(collectionsToCollections, { relationName: "parent" }),
   images: many(images),
+  products: many(products),
 }));
 
 export const collectionsToCollections = pgTable(

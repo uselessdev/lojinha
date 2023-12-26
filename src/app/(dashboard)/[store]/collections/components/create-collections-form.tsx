@@ -112,6 +112,32 @@ export function CreateCollectionForm({ collections = [] }: Props) {
 
         <FormField
           control={form.control}
+          // @ts-expect-error cover is not in schema
+          name="cover"
+          render={() => (
+            <FormItem>
+              <FormLabel>Imagens</FormLabel>
+              <FormControl>
+                <InputUpload
+                  multiple
+                  files={selectedFiles}
+                  onRemoveFile={(file) => {
+                    const isString = typeof file === "string";
+
+                    if (!isString) {
+                      setSelectedFiles((files) => files.filter((f) => f.name !== file.name));
+                    }
+                  }}
+                  onChange={(event) => setSelectedFiles((selected) => [...selected, ...event.target.files])}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="parents"
           render={({ field }) => {
             return (
@@ -143,32 +169,6 @@ export function CreateCollectionForm({ collections = [] }: Props) {
           name="description"
           render={({ field }) => (
             <Editor label="Descrição" {...field} onChange={({ html }) => form.setValue("description", html)} />
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          // @ts-expect-error cover is not in schema
-          name="cover"
-          render={() => (
-            <FormItem>
-              <FormLabel>Imagens</FormLabel>
-              <FormControl>
-                <InputUpload
-                  multiple
-                  files={selectedFiles}
-                  onRemoveFile={(file) => {
-                    const isString = typeof file === "string";
-
-                    if (!isString) {
-                      setSelectedFiles((files) => files.filter((f) => f.name !== file.name));
-                    }
-                  }}
-                  onChange={(event) => setSelectedFiles((selected) => [...selected, ...event.target.files])}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
           )}
         />
 

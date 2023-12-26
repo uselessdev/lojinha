@@ -19,4 +19,29 @@ export const formatters = {
 
     return result;
   },
+
+  number: (value: number | string) => {
+    if (typeof value === "number") {
+      return value;
+    }
+
+    return Number(value.replace(/\D+/g, ""));
+  },
+
+  currency: (value: number) => {
+    const intl = new Intl.NumberFormat("pt-BR", {
+      currency: "BRL",
+      style: "currency",
+    });
+
+    return intl.format(value / 100);
+  },
+
+  priceToNumberOrUndefined: (price?: string) => {
+    if (!price) {
+      return undefined;
+    }
+
+    return formatters.number(price);
+  },
 };

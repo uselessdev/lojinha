@@ -1,5 +1,16 @@
 import { CollectionSchema } from "~/app/(dashboard)/[store]/collections/schema";
-import { Collection, and, collections, collectionsToCollections, db, eq, images, notInArray, or } from "~/lib/db";
+import {
+  Collection,
+  and,
+  collections,
+  collectionsToCollections,
+  db,
+  eq,
+  images,
+  isNull,
+  notInArray,
+  or,
+} from "~/lib/db";
 import { Events } from "./events";
 import { UTApi } from "uploadthing/server";
 import { env } from "~/env.mjs";
@@ -30,7 +41,11 @@ export const Collections = {
   _all: async (store: string, columns?: Partial<Record<keyof Collection, boolean>>, ignore: number[] = []) => {
     return await db.query.collections.findMany({
       where: (collection, { and, eq, notInArray }) =>
-        and(eq(collection.store, store), (ignore ?? []).length > 0 ? notInArray(collection.id, ignore) : undefined),
+        and(
+          eq(collection.store, store),
+          (ignore ?? []).length > 0 ? notInArray(collection.id, ignore) : undefined,
+          isNull(collections.deletedAt),
+        ),
       columns,
     });
   },

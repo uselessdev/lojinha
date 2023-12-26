@@ -1,12 +1,22 @@
+import { z } from "zod";
 import { and, db, eq, images } from "~/lib/db";
 
+const imagesSchema = z.object({
+  collection: z.number().optional(),
+  product: z.number().optional(),
+  key: z.string(),
+  store: z.string(),
+  url: z.string().url(),
+});
+
 export const Images = {
-  create: async (args: { collection: number; key: string; store: string; url: string }) => {
+  create: async (data: z.input<typeof imagesSchema>) => {
     await db.insert(images).values({
-      cid: args.collection,
-      key: args.key,
-      store: args.store,
-      url: args.url,
+      key: data.key,
+      store: data.store,
+      url: data.url,
+      cid: data.collection,
+      pid: data.product,
     });
   },
 

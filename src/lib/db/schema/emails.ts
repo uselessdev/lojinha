@@ -12,6 +12,7 @@ export const emails = pgTable(
       .notNull(),
     store: text("store").notNull(),
     storeId: integer("store_id").notNull(),
+    // @TODO unique need to be address and stores because user can belong to many stores.
     address: text("address").notNull().unique(),
   },
   (table) => ({

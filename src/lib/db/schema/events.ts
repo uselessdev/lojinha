@@ -12,6 +12,11 @@ export const actions = pgEnum("event_action", [
   "DELETE_COLLECTION",
   "CREATE_KEY",
   "REVOKE_KEY",
+  "CREATE_PRODUCT",
+  "UPDATE_PRODUCT",
+  "ARCHIVE_PRODUCT",
+  "RESTORE_PRODUCT",
+  "DELETE_PRODUCT",
 ]);
 
 export const events = pgTable(

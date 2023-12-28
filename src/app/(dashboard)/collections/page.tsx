@@ -4,14 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/com
 import { Collections } from "~/repositories/collections";
 import { CollectionsList } from "./components/list-collections-table";
 
-type Props = {
-  params: {
-    store: string;
-  };
-};
-
-export default async function CollectionsPage({ params }: Props) {
-  const collections = await Collections.all(params.store);
+export default async function CollectionsPage() {
+  const collections = await Collections.all();
 
   return (
     <Card>

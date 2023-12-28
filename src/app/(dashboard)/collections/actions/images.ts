@@ -6,6 +6,7 @@ import { env } from "~/env.mjs";
 import { createServerAction } from "~/lib/actions/create-server-action";
 import { Images } from "~/repositories/images";
 
+/** @todo this can be simplified by exporting in lib */
 const utapi = new UTApi({ apiKey: env.UPLOADTHING_SECRET });
 
 export const deleteImagesAction = createServerAction({

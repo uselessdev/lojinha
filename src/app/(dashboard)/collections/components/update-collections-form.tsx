@@ -1,81 +1,90 @@
 "use client";
 
+import { useForm } from "react-hook-form";
 import slugify from "slugify";
-import { SubmitButton } from "~/components/submit-button";
-import { Collection } from "~/lib/db";
-import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CollectionSchema, collectionSchema } from "../schema";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { Editor } from "~/components/editor";
 import { Autocomplete, Option } from "~/components/autocomplete";
+import { Editor } from "~/components/editor";
 import { InputUpload } from "~/components/input-upload";
 import { useState } from "react";
 import { useUploadThing } from "~/lib/uploadthing";
-import { createCollectionAction } from "../actions/create";
+import { type CollectionSchema, collectionSchema } from "../schema";
+import { useRouter } from "next/navigation";
+import { toast } from "~/components/ui/use-toast";
+import { Collection, Image } from "~/lib/db";
+import { SubmitButton } from "~/components/submit-button";
 import { useServerAction } from "~/lib/actions/use-server-action";
-import { useToast } from "~/components/ui/use-toast";
-import { useParams, useRouter } from "next/navigation";
+import { deleteImagesAction } from "../actions/images";
+import { updateCollectionAction } from "../actions/update";
 
 type Props = {
+  collection: Collection & { parents: Collection[]; images: Image[] };
   collections: Collection[];
 };
 
-export function CreateCollectionForm({ collections = [] }: Props) {
-  const navigate = useRouter();
-  const params = useParams();
+export function UpdateCollectionForm({ collections, collection }: Props) {
+  const images = useServerAction(deleteImagesAction);
+  const update = useServerAction(updateCollectionAction);
 
-  const { toast } = useToast();
-  const { mutate } = useServerAction(createCollectionAction);
+  const router = useRouter();
 
   const form = useForm<CollectionSchema>({
+    mode: "all",
     defaultValues: {
-      name: "",
-      slug: "",
-      description: "",
-      parents: [],
+      name: collection.name,
+      slug: collection.slug,
+      description: collection.description ?? "",
     },
     resolver: zodResolver(collectionSchema),
   });
 
-  const options: Option[] = collections.map((collection) => ({
-    label: collection.name,
-    value: collection.id,
-  }));
-
   const [selectedFiles, setSelectedFiles] = useState<Array<File>>([]);
   const { startUpload, isUploading } = useUploadThing("collections");
 
-  const onSubmit: SubmitHandler<CollectionSchema> = (data) => {
-    mutate(data, {
-      onSuccess: (data) => {
-        if (data && selectedFiles.length > 0) {
-          startUpload(selectedFiles, {
-            collection: data.id,
+  const options: Option[] = collections.map((collection) => ({
+    value: collection.id,
+    label: collection.name,
+  }));
+
+  const selected: Option[] = collection.parents.map((collection) => ({
+    value: collection.id,
+    label: collection.name,
+  }));
+
+  const onSubmit = () => {
+    update.mutate(
+      { ...form.getValues(), id: collection.id },
+      {
+        async onSuccess(data) {
+          if (selectedFiles.length > 0 && data) {
+            await startUpload(selectedFiles, { collection: data.id });
+          }
+
+          toast({
+            title: "Coleção Alterada",
+            description: `A coleção ${data?.name} foi alterada.`,
+            className: "p-3",
           });
-        }
 
-        toast({
-          title: "Coleção Criada",
-          description: `A coleção ${data?.name} foi adicionada.`,
-          className: "p-3",
-        });
-
-        navigate.push(`/${params.store}/collections`);
+          router.push(`/collections`);
+        },
+        onError: () => {
+          toast({
+            title: "Erro",
+            description: "Ocorreu um erro ao tentar alterar sua coleção, tente novamente.",
+            className: "p-3",
+            variant: "destructive",
+          });
+        },
       },
-      onError: () => {
-        toast({
-          title: "Ocorreu um erro",
-          description: "Não foi possível criar esta coleção.",
-        });
-      },
-    });
+    );
   };
 
   return (
     <Form {...form}>
-      <form className="space-y-4" action={() => onSubmit(form.getValues())}>
+      <form className="space-y-4" action={onSubmit}>
         <FormField
           control={form.control}
           name="name"
@@ -87,7 +96,7 @@ export function CreateCollectionForm({ collections = [] }: Props) {
                   {...field}
                   onChange={({ target }) => {
                     form.setValue("name", target.value);
-                    form.setValue("slug", slugify(target.value ?? "", { lower: true, trim: true }));
+                    form.setValue("slug", slugify(target.value, { lower: true, trim: true }));
                   }}
                 />
               </FormControl>
@@ -105,24 +114,31 @@ export function CreateCollectionForm({ collections = [] }: Props) {
               <FormControl>
                 <Input {...field} readOnly />
               </FormControl>
-              <FormMessage />
+              <FormDescription>Este campo é preenchido de forma automática.</FormDescription>
             </FormItem>
           )}
         />
 
         <FormField
           control={form.control}
-          // @ts-expect-error cover is not in schema
+          // @ts-expect-error name is not from schema
           name="cover"
           render={() => (
             <FormItem>
-              <FormLabel>Imagens</FormLabel>
+              <FormLabel>Imagem</FormLabel>
               <FormControl>
                 <InputUpload
-                  multiple
-                  files={selectedFiles}
+                  files={[...collection.images.map((image) => image.url), ...selectedFiles]}
                   onRemoveFile={(file) => {
                     const isString = typeof file === "string";
+
+                    if (isString) {
+                      const image = collection.images.find((i) => file === i.url);
+
+                      if (image) {
+                        images.mutate({ id: image.id, key: image.key }, { onSuccess: () => router.refresh() });
+                      }
+                    }
 
                     if (!isString) {
                       setSelectedFiles((files) => files.filter((f) => f.name !== file.name));
@@ -139,18 +155,18 @@ export function CreateCollectionForm({ collections = [] }: Props) {
         <FormField
           control={form.control}
           name="parents"
-          render={({ field }) => {
+          render={() => {
             return (
               <FormItem>
                 <FormLabel>Coleções</FormLabel>
                 <FormControl>
                   <Autocomplete
                     options={options}
-                    {...field}
+                    defaultSelected={selected}
                     onChange={({ target }) => {
                       form.setValue(
                         "parents",
-                        target.value.map((e) => e.value as number),
+                        target.value.map(({ value }) => value as number),
                       );
                     }}
                   />
@@ -168,11 +184,15 @@ export function CreateCollectionForm({ collections = [] }: Props) {
           control={form.control}
           name="description"
           render={({ field }) => (
-            <Editor label="Descrição" {...field} onChange={({ html }) => form.setValue("description", html)} />
+            <Editor
+              label="Descrição"
+              initialValue={field.value}
+              onChange={({ html }) => form.setValue("description", html)}
+            />
           )}
         />
 
-        <SubmitButton text="Criando coleção">Criar Coleção</SubmitButton>
+        <SubmitButton text="Alterando...">Alterar Coleção</SubmitButton>
       </form>
     </Form>
   );

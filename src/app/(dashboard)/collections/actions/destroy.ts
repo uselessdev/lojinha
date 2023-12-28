@@ -10,7 +10,7 @@ export const destroyCollectionAction = createServerAction({
   schema: z.object({ id: z.number() }),
   handler: async (payload, ctx) => {
     try {
-      const collection = await Collections.destroy({ id: payload.id, store: ctx.store });
+      const collection = await Collections.destroy({ id: payload.id });
 
       if (collection) {
         if (collection) {
@@ -21,7 +21,7 @@ export const destroyCollectionAction = createServerAction({
         }
       }
 
-      revalidatePath(`/${ctx.store}/collections`, "page");
+      revalidatePath(`/collections`, "page");
 
       return { success: true, data: collection };
     } catch (error) {

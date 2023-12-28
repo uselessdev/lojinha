@@ -1,6 +1,6 @@
 import { createId } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
-import { integer, index, text, serial, pgTable } from "drizzle-orm/pg-core";
+import { integer, index, text, serial, pgTable, unique } from "drizzle-orm/pg-core";
 import { stores } from "./stores";
 
 export const emails = pgTable(
@@ -12,13 +12,13 @@ export const emails = pgTable(
       .notNull(),
     store: text("store").notNull(),
     storeId: integer("store_id").notNull(),
-    // @TODO unique need to be address and stores because user can belong to many stores.
-    address: text("address").notNull().unique(),
+    address: text("address").notNull(),
   },
   (table) => ({
     eid: index("eid").on(table.eid),
     storeidx: index("storeidx").on(table.store),
     addressidx: index("addressidx").on(table.address),
+    emails: unique("address_store_unique").on(table.store, table.address),
   }),
 );
 

@@ -1,30 +1,29 @@
 "use server";
 
-import { createServerAction } from "~/lib/actions/create-server-action";
-import { collectionSchema } from "../schema";
-import { z } from "zod";
-import { Collections } from "~/repositories/collections";
-import { svix } from "~/lib/svix";
-import { formatters } from "~/lib/formatters";
 import { revalidatePath } from "next/cache";
+import { createServerAction } from "~/lib/actions/create-server-action";
+import { svix } from "~/lib/svix";
+import { collectionSchema } from "../schema";
+import { Collections } from "~/repositories/collections";
+import { formatters } from "~/lib/formatters";
 
-export const updateCollectionAction = createServerAction({
-  schema: collectionSchema.extend({ id: z.number() }),
+export const createCollectionAction = createServerAction({
+  schema: collectionSchema,
   handler: async ({ parents = [], ...payload }, ctx) => {
     try {
-      const collection = await Collections.update({ ...payload, parents, store: ctx.store });
+      const collection = await Collections.create({ ...payload, parents });
 
       if (collection && ctx.wh) {
         await svix.message.create(ctx.wh, {
+          eventType: "collection.create",
           payload: {
             data: formatters.applyDataSpec(collection),
-            type: "collection.update",
+            type: "collection.create",
           },
-          eventType: "collection.update",
         });
       }
 
-      revalidatePath(`/${ctx.store}/collections`, "page");
+      revalidatePath(`/collections`, "page");
 
       return { success: true, data: collection };
     } catch (error) {

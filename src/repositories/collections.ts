@@ -1,4 +1,4 @@
-import { CollectionSchema } from "~/app/(dashboard)/[store]/collections/schema";
+import { CollectionSchema } from "~/app/(dashboard)/collections/schema";
 import {
   Collection,
   and,
@@ -14,13 +14,16 @@ import {
 import { Events } from "./events";
 import { UTApi } from "uploadthing/server";
 import { env } from "~/env.mjs";
+import { auth } from "@clerk/nextjs";
 
 export const utapi = new UTApi({ apiKey: env.UPLOADTHING_SECRET });
 
 export const Collections = {
-  all: async (store: string) => {
+  all: async () => {
+    const { orgId: store } = auth();
+
     const collections = await db.query.collections.findMany({
-      where: (collection, { eq, and }) => and(eq(collection.store, store)),
+      where: (collection, { eq, and }) => and(eq(collection.store, String(store))),
       with: {
         parents: {
           with: {
@@ -38,11 +41,13 @@ export const Collections = {
     }));
   },
 
-  _all: async (store: string, columns?: Partial<Record<keyof Collection, boolean>>, ignore: number[] = []) => {
+  _all: async (columns?: Partial<Record<keyof Collection, boolean>>, ignore: number[] = []) => {
+    const { orgId: store } = auth();
+
     return await db.query.collections.findMany({
       where: (collection, { and, eq, notInArray }) =>
         and(
-          eq(collection.store, store),
+          eq(collection.store, String(store)),
           (ignore ?? []).length > 0 ? notInArray(collection.id, ignore) : undefined,
           isNull(collections.deletedAt),
         ),
@@ -50,11 +55,13 @@ export const Collections = {
     });
   },
 
-  create: async ({ parents, ...data }: CollectionSchema, store: string) => {
+  create: async ({ parents, ...data }: CollectionSchema) => {
+    const { orgId: store } = auth();
+
     return db.transaction(async (tx) => {
       const [collection] = await tx
         .insert(collections)
-        .values({ ...data, store })
+        .values({ ...data, store: String(store) })
         .returning();
 
       if (parents.length > 0 && collection) {
@@ -67,9 +74,11 @@ export const Collections = {
     });
   },
 
-  find: async (store: string, id: string) => {
+  find: async (id: string) => {
+    const { orgId: store } = auth();
+
     const collection = await db.query.collections.findFirst({
-      where: (collection, { and, eq }) => and(eq(collection.store, store), eq(collection.eid, id)),
+      where: (collection, { and, eq }) => and(eq(collection.store, String(store)), eq(collection.eid, id)),
       with: {
         parents: {
           with: {
@@ -90,7 +99,9 @@ export const Collections = {
     };
   },
 
-  update: async ({ parents, id, store, ...payload }: CollectionSchema & { id: number; store: string }) => {
+  update: async ({ parents, id, ...payload }: CollectionSchema & { id: number }) => {
+    const { orgId: store } = auth();
+
     const collection = await db.transaction(async (tx) => {
       if (parents.length <= 0) {
         await tx.delete(collectionsToCollections).where(eq(collectionsToCollections.child, id));
@@ -110,7 +121,7 @@ export const Collections = {
       const [result] = await tx
         .update(collections)
         .set({ ...payload, updatedAt: new Date() })
-        .where(and(eq(collections.id, id), eq(collections.store, store)))
+        .where(and(eq(collections.id, id), eq(collections.store, String(store))))
         .returning();
 
       await Events.create({
@@ -124,43 +135,49 @@ export const Collections = {
     return collection;
   },
 
-  archive: async (args: { id: number; store: string }) => {
+  archive: async (data: { id: number }) => {
+    const { orgId: store } = auth();
+
     const [collection] = await db
       .update(collections)
       .set({ deletedAt: new Date() })
-      .where(and(eq(collections.id, args.id), eq(collections.store, args.store)))
+      .where(and(eq(collections.id, data.id), eq(collections.store, String(store))))
       .returning({ name: collections.name, eid: collections.eid });
 
     await Events.create({
       action: "ARCHIVE_COLLECTION",
-      payload: args,
+      payload: data,
     });
 
     return collection;
   },
 
-  restore: async (args: { id: number; store: string }) => {
+  restore: async (data: { id: number }) => {
+    const { orgId: store } = auth();
+
     const [collection] = await db
       .update(collections)
       .set({ deletedAt: null })
-      .where(and(eq(collections.id, args.id), eq(collections.store, args.store)))
+      .where(and(eq(collections.id, data.id), eq(collections.store, String(store))))
       .returning({ name: collections.name, eid: collections.eid });
 
     await Events.create({
       action: "RESTORE_COLLECTION",
-      payload: args,
+      payload: data,
     });
 
     return collection;
   },
 
-  destroy: async (args: { id: number; store: string }) => {
+  destroy: async (data: { id: number }) => {
+    const { orgId: store } = auth();
+
     return db.transaction(async (tx) => {
       await tx
         .delete(collectionsToCollections)
-        .where(or(eq(collectionsToCollections.parent, args.id), eq(collectionsToCollections.child, args.id)));
+        .where(or(eq(collectionsToCollections.parent, data.id), eq(collectionsToCollections.child, data.id)));
 
-      const imgs = await tx.delete(images).where(eq(images.cid, args.id)).returning({ key: images.key });
+      const imgs = await tx.delete(images).where(eq(images.cid, data.id)).returning({ key: images.key });
 
       if (imgs.length > 0) {
         await utapi.deleteFiles(imgs.map(({ key }) => key));
@@ -168,12 +185,12 @@ export const Collections = {
 
       const [collection] = await tx
         .delete(collections)
-        .where(and(eq(collections.id, args.id), eq(collections.store, args.store)))
+        .where(and(eq(collections.id, data.id), eq(collections.store, String(store))))
         .returning({ id: collections.id, name: collections.name, eid: collections.eid });
 
       await Events.create({
         action: "DELETE_COLLECTION",
-        payload: args,
+        payload: data,
       });
 
       return collection;

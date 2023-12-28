@@ -2,14 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/com
 import { Collections } from "~/repositories/collections";
 import { CreateCollectionForm } from "../components/create-collections-form";
 
-type Props = {
-  params: {
-    store: string;
-  };
-};
-
-export default async function CreateCollectionPage({ params }: Props) {
-  const collections = await Collections._all(params.store, { id: true, name: true });
+export default async function CreateCollectionPage() {
+  const collections = await Collections._all({ id: true, name: true });
 
   return (
     <Card>

@@ -37,13 +37,6 @@ export const menu = [
     group: "Configurações",
   },
   {
-    name: "Loja",
-    url: `/settings`,
-    icon: <SettingsIcon />,
-    disabled: false,
-    group: "Configurações",
-  },
-  {
     name: "Eventos",
     url: `/events`,
     icon: <NewspaperIcon />,

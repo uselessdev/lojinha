@@ -2,12 +2,7 @@ import { notFound } from "next/navigation";
 import { env } from "~/env.mjs";
 import { Portal } from "./components/portal";
 import { Webhooks } from "~/repositories/webhooks";
-
-type Props = {
-  params: {
-    store: string;
-  };
-};
+import { auth } from "@clerk/nextjs";
 
 async function getSvixPortal(id: string) {
   const result = await fetch(`${env.SVIX_PORTAL_URL}/${id}/`, {
@@ -23,8 +18,9 @@ async function getSvixPortal(id: string) {
   return result.json() as Promise<{ url: string }>;
 }
 
-export default async function WebhooksPage({ params }: Props) {
-  const portal = await Webhooks.find(params.store);
+export default async function WebhooksPage() {
+  const { orgId } = auth();
+  const portal = await Webhooks.find(String(orgId));
 
   if (!portal) {
     return notFound();

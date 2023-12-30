@@ -1,4 +1,3 @@
-import { productSchema } from "~/app/(dashboard)/[store]/products/schema";
 import {
   db,
   products,
@@ -16,15 +15,19 @@ import { Events } from "./events";
 import { z } from "zod";
 import { UTApi } from "uploadthing/server";
 import { env } from "~/env.mjs";
+import { productSchema } from "~/app/(dashboard)/products/schema";
+import { auth } from "@clerk/nextjs";
 
 export const utapi = new UTApi({ apiKey: env.UPLOADTHING_SECRET });
 
 const productSchemaWithId = productSchema.required({ id: true });
 
 export const Products = {
-  all: async (store: string) => {
+  all: async () => {
+    const { orgId } = auth();
+
     const result = await db.query.products.findMany({
-      where: (products, { eq }) => eq(products.store, store),
+      where: (products, { eq }) => eq(products.store, String(orgId)),
       columns: {
         id: true,
         eid: true,
@@ -73,9 +76,11 @@ export const Products = {
     }));
   },
 
-  find: async (data: { eid: string; store: string }) => {
+  find: async (data: { eid: string }) => {
+    const { orgId } = auth();
+
     const result = await db.query.products.findFirst({
-      where: (product, { and, eq }) => and(eq(product.eid, data.eid), eq(product.store, data.store)),
+      where: (product, { and, eq }) => and(eq(product.eid, data.eid), eq(product.store, String(orgId))),
       with: {
         collections: {
           with: {
@@ -98,13 +103,14 @@ export const Products = {
     };
   },
 
-  create: async (data: z.input<typeof productSchema>, store: string) => {
+  create: async (data: z.input<typeof productSchema>) => {
+    const { orgId } = auth();
     const { variants = [], options = [], collections = [], price, originalPrice, quantity, sku, ...payload } = data;
 
     return db.transaction(async (tx) => {
       const [product] = await tx
         .insert(products)
-        .values({ store, ...payload })
+        .values({ store: String(orgId), ...payload })
         .returning();
 
       if (collections.length > 0) {
@@ -115,14 +121,14 @@ export const Products = {
         await tx.insert(pv).values({
           name: "default",
           pid: product.id,
-          store,
+          store: String(orgId),
           values: ["default"],
         });
 
         await tx.insert(po).values({
           name: "default",
           pid: product.id,
-          store,
+          store: String(orgId),
           originalPrice: formatters.number(originalPrice ?? ""),
           price: formatters.number(price ?? ""),
           quantity,
@@ -131,7 +137,7 @@ export const Products = {
       }
 
       if (variants.length > 0) {
-        await tx.insert(pv).values(variants.map((variant) => ({ ...variant, pid: product.id, store })));
+        await tx.insert(pv).values(variants.map((variant) => ({ ...variant, pid: product.id, store: String(orgId) })));
       }
 
       if (options.length > 0) {
@@ -139,7 +145,7 @@ export const Products = {
           options.map((option) => ({
             ...option,
             pid: product.id,
-            store,
+            store: String(orgId),
             price: formatters.number(option.price ?? ""),
             originalPrice: formatters.number(option.originalPrice ?? ""),
           })),
@@ -152,7 +158,9 @@ export const Products = {
     });
   },
 
-  update: async ({ product: payload, store }: { product: z.input<typeof productSchemaWithId>; store: string }) => {
+  update: async ({ product: payload }: { product: z.input<typeof productSchemaWithId> }) => {
+    const { orgId } = auth();
+
     return db.transaction(async (tx) => {
       const {
         id: pid,
@@ -185,7 +193,7 @@ export const Products = {
         .where(
           and(
             eq(pv.pid, pid),
-            eq(pv.store, store),
+            eq(pv.store, String(orgId)),
             ne(pv.name, "default"),
             variantsIds.length > 0 ? notInArray(pv.id, variantsIds) : undefined,
           ),
@@ -196,7 +204,7 @@ export const Products = {
         .where(
           and(
             eq(po.pid, pid),
-            eq(po.store, store),
+            eq(po.store, String(orgId)),
             ne(po.name, "default"),
             optionsIds.length > 0 ? notInArray(po.id, optionsIds) : undefined,
           ),
@@ -207,7 +215,7 @@ export const Products = {
         await tx
           .update(pv)
           .set({ ...variant })
-          .where(and(eq(pv.id, id as number), eq(pv.pid, pid), eq(pv.store, store)));
+          .where(and(eq(pv.id, id as number), eq(pv.pid, pid), eq(pv.store, String(orgId))));
       }
 
       for (const { id, ...option } of optionsToUpdate) {
@@ -218,7 +226,7 @@ export const Products = {
             price: formatters.priceToNumberOrUndefined(option.price),
             originalPrice: formatters.priceToNumberOrUndefined(option.originalPrice),
           })
-          .where(and(eq(po.id, id as number), eq(po.pid, pid), eq(po.store, store)));
+          .where(and(eq(po.id, id as number), eq(po.pid, pid), eq(po.store, String(orgId))));
       }
 
       /** Handle with new variants and options */
@@ -227,7 +235,7 @@ export const Products = {
           await tx.delete(pv).where(and(eq(pv.id, defaultVariant.id as number), eq(pv.pid, pid)));
         }
 
-        await tx.insert(pv).values(variantsToCreate.map((variant) => ({ ...variant, pid, store })));
+        await tx.insert(pv).values(variantsToCreate.map((variant) => ({ ...variant, pid, store: String(orgId) })));
       }
 
       if (optionsToCreate.length > 0) {
@@ -239,7 +247,7 @@ export const Products = {
           optionsToCreate.map((option) => ({
             ...option,
             pid,
-            store,
+            store: String(orgId),
             price: formatters.priceToNumberOrUndefined(option.price),
             originalPrice: formatters.priceToNumberOrUndefined(option.originalPrice),
           })),
@@ -257,21 +265,21 @@ export const Products = {
             price: formatters.number(defaultOption.price ?? ""),
             originalPrice: formatters.number(defaultOption.originalPrice ?? ""),
           })
-          .where(and(eq(po.id, defaultOption.id as number), eq(po.pid, pid), eq(po.store, store)));
+          .where(and(eq(po.id, defaultOption.id as number), eq(po.pid, pid), eq(po.store, String(orgId))));
       }
 
       const shouldCreateDefaultVariantsAndOptions =
         !defaultOption && !defaultVariant && !variantsToUpdate.length && !optionsToUpdate.length && price;
 
       if (shouldCreateDefaultVariantsAndOptions) {
-        await tx.insert(pv).values({ name: "default", store, pid, values: ["default"] });
+        await tx.insert(pv).values({ name: "default", store: String(orgId), pid, values: ["default"] });
 
         await tx.insert(po).values({
           pid,
-          store,
           quantity,
           sku,
           name: "default",
+          store: String(orgId),
           price: formatters.number(price ?? 0),
           originalPrice: formatters.number(originalPrice ?? 0),
         });
@@ -294,7 +302,7 @@ export const Products = {
       const [product] = await tx
         .update(products)
         .set({ ...data, updatedAt: new Date() })
-        .where(and(eq(products.id, pid), eq(products.store, store)))
+        .where(and(eq(products.id, pid), eq(products.store, String(orgId))))
         .returning();
 
       await Events.create({ action: "UPDATE_PRODUCT", payload });
@@ -303,11 +311,13 @@ export const Products = {
     });
   },
 
-  archive: async (data: { id: number; store: string }) => {
+  archive: async (data: { id: number }) => {
+    const { orgId } = auth();
+
     const [product] = await db
       .update(products)
       .set({ deletedAt: new Date() })
-      .where(and(eq(products.id, data.id), eq(products.store, data.store)))
+      .where(and(eq(products.id, data.id), eq(products.store, String(orgId))))
       .returning({ name: products.name, id: products.eid });
 
     await Events.create({ action: "ARCHIVE_PRODUCT", payload: data });
@@ -315,11 +325,13 @@ export const Products = {
     return product;
   },
 
-  restore: async (data: { id: number; store: string }) => {
+  restore: async (data: { id: number }) => {
+    const { orgId } = auth();
+
     const [product] = await db
       .update(products)
       .set({ deletedAt: null })
-      .where(and(eq(products.id, data.id), eq(products.store, data.store)))
+      .where(and(eq(products.id, data.id), eq(products.store, String(orgId))))
       .returning({ name: products.name, id: products.eid });
 
     await Events.create({ action: "RESTORE_PRODUCT", payload: data });
@@ -327,7 +339,9 @@ export const Products = {
     return product;
   },
 
-  destroy: async (data: { id: number; store: string }) => {
+  destroy: async (data: { id: number }) => {
+    const { orgId } = auth();
+
     return db.transaction(async (tx) => {
       /** @TODO não permitir exclusão de produto se existir pedidos. */
 
@@ -339,12 +353,12 @@ export const Products = {
         await utapi.deleteFiles(imgs.map(({ key }) => key));
       }
 
-      await tx.delete(pv).where(and(eq(pv.pid, data.id), eq(pv.store, data.store)));
-      await tx.delete(po).where(and(eq(po.pid, data.id), eq(po.store, data.store)));
+      await tx.delete(pv).where(and(eq(pv.pid, data.id), eq(pv.store, String(orgId))));
+      await tx.delete(po).where(and(eq(po.pid, data.id), eq(po.store, String(orgId))));
 
       const [product] = await tx
         .delete(products)
-        .where(and(eq(products.id, data.id), eq(products.store, data.store)))
+        .where(and(eq(products.id, data.id), eq(products.store, String(orgId))))
         .returning({ id: products.eid, name: products.name });
 
       await Events.create({ action: "DELETE_PRODUCT", payload: data });

@@ -4,14 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/com
 import { Products } from "~/repositories/products";
 import { ProductsList } from "./components/list-product-form";
 
-type Props = {
-  params: {
-    store: string;
-  };
-};
-
-export default async function ProductsPage({ params }: Props) {
-  const products = await Products.all(params.store);
+export default async function ProductsPage() {
+  const products = await Products.all();
 
   return (
     <Card>

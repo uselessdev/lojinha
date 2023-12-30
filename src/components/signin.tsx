@@ -11,7 +11,7 @@ export function SignIn() {
   if (isSignedIn) {
     return (
       <Button variant="outline" size="sm" asChild>
-        <Link href="/stores" className="flex items-center gap-2">
+        <Link href="/dashboard" className="flex items-center gap-2">
           Dashboard <MoveRightIcon />
         </Link>
       </Button>
@@ -19,7 +19,7 @@ export function SignIn() {
   }
 
   return (
-    <SignInButton mode="modal" afterSignInUrl="/stores" afterSignUpUrl="/stores">
+    <SignInButton mode="modal" afterSignInUrl="/dashboard" afterSignUpUrl="/dashboard">
       <Button className="flex w-[122px] items-center gap-2" size="sm" variant="outline">
         Entrar <MoveRightIcon />
       </Button>

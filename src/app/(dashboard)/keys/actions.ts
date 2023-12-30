@@ -26,12 +26,12 @@ export const createApiKeyAction = createServerAction({
 
       await Events.create({ action: "CREATE_KEY", payload: { store: ctx.store } });
 
-      revalidatePath(`${ctx.store}/keys`, "page");
+      revalidatePath("/keys", "page");
 
       return { success: true, data: keys.result };
     } catch (error) {
       console.error(error);
-      return { success: false, error: (error as Error).message };
+      return { success: false, error: `Ocorreu um erro ao tentar criar a chave de api.` };
     }
   },
 });

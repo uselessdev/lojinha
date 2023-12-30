@@ -14,14 +14,17 @@ export const GET = async () => {
           parent: true,
         },
       },
-      images: true,
+      images: {
+        columns: {
+          url: true,
+        },
+      },
     },
   });
 
-  const collections = results.map(({ parents, images, ...collection }) => ({
+  const collections = results.map(({ parents, ...collection }) => ({
     ...collection,
     parents: parents.map((parents) => formatters.applyDataSpec(parents.parent)),
-    images: formatters.applyDataSpec(images),
   }));
 
   const [{ total }] = await db

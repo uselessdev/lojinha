@@ -20,7 +20,11 @@ export async function GET(request: Request, { params }: Params) {
           collection: true,
         },
       },
-      images: true,
+      images: {
+        columns: {
+          url: true,
+        },
+      },
       options: true,
       variants: true,
     },
@@ -36,7 +40,6 @@ export async function GET(request: Request, { params }: Params) {
   const product = {
     ...result,
     collections: result.collections.map(({ collection }) => formatters.applyDataSpec(collection)),
-    images: result.images.map(({ cid, pid, ...image }) => formatters.applyDataSpec(image)),
     options: result.options.map(({ pid, ...option }) => formatters.applyDataSpec(option)),
     variants: result.variants.map(({ pid, ...variant }) => formatters.applyDataSpec(variant)),
   };

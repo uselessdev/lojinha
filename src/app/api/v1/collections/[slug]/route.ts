@@ -20,7 +20,11 @@ export const GET = async (request: Request, { params }: Props) => {
           parent: true,
         },
       },
-      images: true,
+      images: {
+        columns: {
+          url: true,
+        },
+      },
     },
   });
 
@@ -31,7 +35,6 @@ export const GET = async (request: Request, { params }: Props) => {
   const collection = {
     ...results,
     parents: (results?.parents ?? []).map(({ parent }) => formatters.applyDataSpec(parent)),
-    images: formatters.applyDataSpec(results.images),
   };
 
   return NextResponse.json({ collection: formatters.applyDataSpec(collection) });

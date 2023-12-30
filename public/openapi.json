@@ -161,9 +161,9 @@
     },
     "collection.delete": {
       "post": {
-        "description": "Quando uma coleção é excluída definitivamente.",
+        "description": "Quando uma coleção é excluída definitivamente excluída.",
         "requestBody": {
-          "description": "Quando uma coleção é definitivamente",
+          "description": "Quando uma coleção é definitivamente excluída",
           "content": {
             "application/json": {
               "schema": {
@@ -198,6 +198,190 @@
           }
         }
       }
+    },
+    "product.create": {
+      "post": {
+        "description": "Quando um novo produto é criado.",
+        "requestBody": {
+          "description": "Quando um novo produto é criado.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductData"
+              },
+              "example": {
+                "data": {
+                  "id": "pdt_dow8mzf43a7f1wm9hvz81jnn",
+                  "name": "Blusão Nike Dri Fit",
+                  "slug": "blusao-nike-dri-fit",
+                  "description": "<p>Blusão <strong>Nike DriFIT</strong></p>",
+                  "createdAt": "2023-12-04 22:06:31.369478",
+                  "updatedAt": null,
+                  "deletedAt": null
+                },
+                "type": "product.create"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Se a solicitação for feita com sucesso, deve retornar um status 200."
+          }
+        }
+      }
+    },
+    "product.update": {
+      "post": {
+        "description": "Quando um novo produto é atualizada.",
+        "requestBody": {
+          "description": "Quando um novo produto é atualizado.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductData"
+              },
+              "example": {
+                "data": {
+                  "id": "pdt_dow8mzf43a7f1wm9hvz81jnn",
+                  "name": "Blusão Nike Dri Fit",
+                  "slug": "blusao-nike-dri-fit",
+                  "description": "<p>Blusão <strong>Nike DriFIT</strong></p>",
+                  "createdAt": "2023-12-04 22:06:31.369478",
+                  "updatedAt": "2023-12-28 01:47:13.166",
+                  "deletedAt": null
+                },
+                "type": "product.update"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Se a solicitação for feita com sucesso, deve retornar um status 200."
+          }
+        }
+      }
+    },
+    "product.archive": {
+      "post": {
+        "description": "Quando um produto é arquivado.",
+        "requestBody": {
+          "description": "Quando um produto é arquivado.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "cuid"
+                      }
+                    }
+                  },
+                  "type": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "data": {
+                  "id": "pdt_dow8mzf43a7f1wm9hvz81jnn"
+                },
+                "type": "product.archive"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Se a solicitação for feita com sucesso, deve retornar um status 200."
+          }
+        }
+      }
+    },
+    "product.restore": {
+      "post": {
+        "description": "Quando um produto é restaurado.",
+        "requestBody": {
+          "description": "Quando um produto é restaurado.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "cuid"
+                      }
+                    }
+                  },
+                  "type": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "data": {
+                  "id": "pdt_dow8mzf43a7f1wm9hvz81jnn"
+                },
+                "type": "product.restore"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Se a solicitação for feita com sucesso, deve retornar um status 200."
+          }
+        }
+      }
+    },
+    "product.delete": {
+      "post": {
+        "description": "Quando um produto é definitivamente excluído.",
+        "requestBody": {
+          "description": "Quando um produto é definitivamente excluído.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "cuid"
+                      }
+                    }
+                  },
+                  "type": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "data": {
+                  "id": "pdt_dow8mzf43a7f1wm9hvz81jnn"
+                },
+                "type": "product.delete"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Se a solicitação for feita com sucesso, deve retornar um status 200."
+          }
+        }
+      }
     }
   },
   "paths": {
@@ -215,13 +399,150 @@
                     "collections": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/components/schemas/Collection",
-                        "parents": {
+                        "allOf": [
+                          {
+                            "$ref": "#/components/schemas/Collection"
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "patents": {
+                                "type": "array",
+                                "items": {
+                                  "$ref": "#/components/schemas/Collection"
+                                }
+                              },
+                              "images": {
+                                "type": "array",
+                                "items": {
+                                  "$ref": "#/components/schemas/Image"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "total": {
+                      "type": "number",
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/collections/{slug}": {
+      "get": {
+        "summary": "Lista uma coleção pela slug fornecida.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "description": "A slug da coleção",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Collection"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "patents": {
                           "type": "array",
                           "items": {
                             "$ref": "#/components/schemas/Collection"
                           }
+                        },
+                        "images": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Image"
+                          }
                         }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/collections/{slug}/products": {
+      "get": {
+        "summary": "Lista todos os produtos que pertencem a esta coleção.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "description": "A slug da coleção",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "products": {
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {
+                            "$ref": "#/components/schemas/Product"
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "collections": {
+                                "type": "array",
+                                "items": {
+                                  "$ref": "#/components/schemas/Collection"
+                                }
+                              },
+                              "images": {
+                                "type": "array",
+                                "items": {
+                                  "$ref": "#/components/schemas/Image"
+                                }
+                              },
+                              "options": {
+                                "type": "array",
+                                "items": {
+                                  "$ref": "#/components/schemas/Option"
+                                }
+                              },
+                              "variants": {
+                                "type": "array",
+                                "items": {
+                                  "$ref": "#/components/schemas/Variant"
+                                }
+                              }
+                            }
+                          }
+                        ]
                       }
                     },
                     "total": {
@@ -261,7 +582,8 @@
         "properties": {
           "id": {
             "type": "string",
-            "format": "cuid"
+            "format": "cuid",
+            "example": "col_h35xsnhkyz6mephf0nu3ng0w"
           },
           "name": {
             "type": "string",
@@ -288,6 +610,121 @@
             "format": "date-time"
           }
         }
+      },
+      "ProductData": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Product"
+          },
+          "type": {
+            "type": "string"
+          }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "required": ["id", "name", "slug", "createdAt"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "cuid",
+            "example": "pdt_dow8mzf43a7f1wm9hvz81jnn"
+          },
+          "name": {
+            "type": "string",
+            "example": "Puma"
+          },
+          "slug": {
+            "type": "string",
+            "example": "puma"
+          },
+          "description": {
+            "type": "string",
+            "example": "Puma"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deletedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Image": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "url",
+            "example": "https://utfs.io/f/8211286e-f268-4e47-a5c1-b7aaf8d70bb8-1wkca.avif"
+          }
+        }
+      },
+      "Option": {
+        "type": "object",
+        "required": ["id", "name"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "cuid",
+            "example": "pop_apqo5cw7kc7mwcivql7hcaq1"
+          },
+          "name": {
+            "type": "string",
+            "example": "Azul/36"
+          },
+          "price": {
+            "type": "number",
+            "example": 22000
+          },
+          "originalPrice": {
+            "type": "number"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "sku": {
+            "type": "string",
+            "example": "COD-00101"
+          }
+        }
+      },
+      "Variant": {
+        "type": "object",
+        "required": ["id", "name", "values"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "cuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "example": [
+          {
+            "id": "pva_q3z7u1pnd8lqdlq73oyszgnf",
+            "name": "Cor",
+            "values": ["Azul"]
+          },
+          {
+            "id": "",
+            "name": "Tamanho",
+            "values": ["36"]
+          }
+        ]
       }
     }
   }

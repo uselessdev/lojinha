@@ -50,7 +50,11 @@ export const GET = async (request: Request, { params }: Props) => {
           collection: true,
         },
       },
-      images: true,
+      images: {
+        columns: {
+          url: true,
+        },
+      },
       options: true,
       variants: true,
     },
@@ -59,7 +63,6 @@ export const GET = async (request: Request, { params }: Props) => {
   const products = results.map((product) => ({
     ...product,
     collections: formatters.applyDataSpec(product.collections.map(({ collection }) => collection)),
-    images: product.images.map(({ cid, pid, ...image }) => formatters.applyDataSpec(image)),
     options: product.options.map(({ pid, ...option }) => formatters.applyDataSpec(option)),
     variants: product.variants.map(({ pid, ...variant }) => formatters.applyDataSpec(variant)),
   }));

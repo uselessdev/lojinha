@@ -10,7 +10,7 @@ export const destroyProductAction = createServerAction({
   schema: z.object({ id: z.number() }),
   handler: async (payload, ctx) => {
     try {
-      const product = await Products.destroy({ id: payload.id, store: ctx.store });
+      const product = await Products.destroy(payload);
 
       if (product) {
         await svix.message.create(ctx.wh as string, {

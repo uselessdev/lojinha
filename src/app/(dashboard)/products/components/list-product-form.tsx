@@ -4,7 +4,6 @@ import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "
 import { ArchiveIcon, ArchiveRestoreIcon, InfoIcon, MoreHorizontal, PenIcon, Trash2Icon } from "lucide-react";
 import NextImage from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import {
@@ -51,7 +50,6 @@ const column = createColumnHelper<ProductsWithRelations>();
 
 export function ProductsList({ products }: Props) {
   const { toast } = useToast();
-  const params = useParams();
   const [updatingId, setUpdatinhId] = useState("");
   const [deletingId, setDeletingId] = useState<number | undefined>();
   const confirm = useDisclosure();
@@ -108,7 +106,7 @@ export function ProductsList({ products }: Props) {
           <div className="flex flex-wrap gap-2">
             {collections.map((collection) => (
               <Badge key={collection.eid} variant="outline" className="cursor-pointer">
-                <Link href={`/${params.store}/collections/${collection.eid}`}>{collection.name}</Link>
+                <Link href={`/collections/${collection.eid}`}>{collection.name}</Link>
               </Badge>
             ))}
           </div>
@@ -211,7 +209,7 @@ export function ProductsList({ products }: Props) {
 
               <DropdownMenuContent align="end">
                 <DropdownMenuItem asChild className="flex gap-2">
-                  <Link href={`/${params.store}/products/${product.eid}`}>
+                  <Link href={`/products/${product.eid}`}>
                     <PenIcon className="h-3 w-3" /> Editar
                   </Link>
                 </DropdownMenuItem>
@@ -238,6 +236,7 @@ export function ProductsList({ products }: Props) {
                               title: "Ops.",
                               description: `Ocorreu um erro ao tentar restaurar este produto, tente novamente.`,
                               className: `p-3`,
+                              variant: "destructive",
                             });
                           },
                         },
@@ -268,6 +267,7 @@ export function ProductsList({ products }: Props) {
                               title: "Ops.",
                               description: `Ocorreu um erro ao tentar arquivar este produto, tente novamente.`,
                               className: `p-3`,
+                              variant: "destructive",
                             });
                           },
                         },
@@ -364,6 +364,7 @@ export function ProductsList({ products }: Props) {
                         title: "Ocorreu um problema",
                         description: `O produto não pode ser excluido no momento.`,
                         className: "p-3",
+                        variant: "destructive",
                       });
                     },
                   },

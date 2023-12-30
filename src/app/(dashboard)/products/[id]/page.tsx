@@ -6,13 +6,12 @@ import { Collections } from "~/repositories/collections";
 type Props = {
   params: {
     id: string;
-    store: string;
   };
 };
 
 export default async function ProductPage({ params }: Props) {
-  const product = await Products.find({ eid: params.id, store: params.store });
-  const collections = await Collections._all(params.store, { id: true, name: true });
+  const product = await Products.find({ eid: params.id });
+  const collections = await Collections._all({ id: true, name: true });
 
   if (!product) {
     return notFound();

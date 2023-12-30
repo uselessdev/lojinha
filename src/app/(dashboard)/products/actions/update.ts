@@ -11,7 +11,7 @@ export const updateProductAction = createServerAction({
   schema: updateProductSchema,
   handler: async (payload, ctx) => {
     try {
-      const product = await Products.update({ product: payload, store: ctx.store });
+      const product = await Products.update({ product: payload });
 
       if (product) {
         await svix.message.create(ctx.wh as string, {
@@ -23,7 +23,7 @@ export const updateProductAction = createServerAction({
         });
       }
 
-      revalidatePath(`/${ctx.store}/products`, "page");
+      revalidatePath(`/products`, "page");
 
       return { success: true, data: product };
     } catch (error) {

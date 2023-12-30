@@ -15,7 +15,7 @@ import { InputUpload } from "~/components/input-upload";
 import { useEffect, useState } from "react";
 import { useServerAction } from "~/lib/actions/use-server-action";
 import { deleteImagesAction } from "../../collections/actions/images";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { formatters } from "~/lib/formatters";
 import { Button } from "~/components/ui/button";
 import { PlusIcon, Trash2Icon } from "lucide-react";
@@ -32,7 +32,6 @@ type Props = {
 };
 
 export function UpdateProductForm({ product, collections }: Props) {
-  const params = useParams();
   const navigation = useRouter();
   const { toast } = useToast();
   const update = useServerAction(updateProductAction);
@@ -126,7 +125,7 @@ export function UpdateProductForm({ product, collections }: Props) {
     );
   }, [watched, form, product.options]);
 
-  const { startUpload, isUploading } = useUploadThing("products");
+  const { startUpload } = useUploadThing("products");
 
   const onSubmit: SubmitHandler<ProductSchema> = (data) => {
     update.mutate(
@@ -150,7 +149,7 @@ export function UpdateProductForm({ product, collections }: Props) {
             className: "p-3",
           });
 
-          navigation.push(`/${params.store}/products`);
+          navigation.push(`/products`);
         },
 
         onError: () => {
@@ -158,6 +157,7 @@ export function UpdateProductForm({ product, collections }: Props) {
             title: "Ops.",
             description: "Não foi possível alterar este produto.",
             className: "p-3",
+            variant: "destructive",
           });
         },
       },

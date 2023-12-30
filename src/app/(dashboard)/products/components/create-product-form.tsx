@@ -23,7 +23,7 @@ import { useServerAction } from "~/lib/actions/use-server-action";
 import { createProductAction } from "../actions/create";
 import { useUploadThing } from "~/lib/uploadthing";
 import { useToast } from "~/components/ui/use-toast";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 type Props = {
   collections: Pick<Collection, "id" | "name">[];
@@ -31,7 +31,6 @@ type Props = {
 
 export function CreateProductForm({ collections }: Props) {
   const navigate = useRouter();
-  const params = useParams();
   const { toast } = useToast();
   const { mutate } = useServerAction(createProductAction);
 
@@ -87,7 +86,7 @@ export function CreateProductForm({ collections }: Props) {
     }
   }, [watched, form]);
 
-  const { startUpload, isUploading } = useUploadThing("products");
+  const { startUpload } = useUploadThing("products");
 
   const onSubmit: SubmitHandler<ProductSchema> = (data) => {
     mutate(data, {
@@ -102,13 +101,15 @@ export function CreateProductForm({ collections }: Props) {
           className: "p-3",
         });
 
-        navigate.push(`/${params.store}/products`);
+        navigate.push(`/products`);
       },
 
       onError() {
         toast({
           title: "Ocorreu um erro",
           description: "Não foi possível criar este produto.",
+          variant: "destructive",
+          className: "p-3",
         });
       },
     });
